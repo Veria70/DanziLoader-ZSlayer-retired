@@ -1,2 +1,5 @@
 [alias]
 xtask = "run --quiet --package xtask --"
+
+[env]
+DANZILOADER_VERSION = "1.0"

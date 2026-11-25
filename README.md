@@ -1,3 +1,20 @@
+# DanziLoader
+
+DanziLoader is a Windows Series X rendering and frame-pacing experiment based on
+[ZSlayerHQ/victory-world-runtime](https://github.com/ZSlayerHQ/victory-world-runtime/tree/02ea29c7eeb22da87156676c332dbb157cb9b681).
+The baseline is pinned to that revision so changes can be compared in the same
+scene. The existing renderer, shader translation and ability to reach the world
+come from upstream. The project keeps the original licensing and credits.
+
+Our target is sustained 25 FPS in a rendered, controllable scene (40 ms per
+frame). Local experiments measure consecutive engine presents and inspect the
+same room for visible walls, the window mesh, clothing detail and lighting.
+See [the first experiment](docs/danzi-frame-pacing.md) for the measured status
+and how to check it. No title binaries, shaders, caches or game assets are
+distributed here.
+
+## Upstream documentation
+
 # victory-world-runtime
 
 The runtime of [victory-world](https://github.com/ZSlayerHQ/victory-world), a
@@ -30,7 +47,7 @@ RAM and 9 GB of video memory, and the cache and builds need about 40 GB of disk
 besides your copy of the title.
 
 The title also needs several GiB of available Windows commit at startup.
-Check **Committed** under **Task Manager → Performance → Memory**. If
+Check **Committed** under **Task Manager â†’ Performance â†’ Memory**. If
 `crashes.log` reports Windows error 1455, close other applications or increase
 the Windows paging file size, then retry.
 
@@ -241,9 +258,9 @@ What each part does today and what it still needs:
 
 | Subsystem | Today | Needs |
 |-----------|-------|-------|
-| Loader | Runs the title's executable and its DLLs in our process; crash reports name the faulting code and are kept in `crashes.log` | – |
+| Loader | Runs the title's executable and its DLLs in our process; crash reports name the faulting code and are kept in `crashes.log` | â€“ |
 | Runtime services | One signed-in offline user, licences, packages, saves that survive a kill at any step, text entry dialog | Speech is silent; the dialog and relaunch are untested live |
-| Network | Offline by design: the title cannot reach the network | – |
+| Network | Offline by design: the title cannot reach the network | â€“ |
 | Files and streaming | Archives and streamed data read, zlib and BCPack decoded in parallel | Loading is limited by writes into title memory |
 | Input | XInput pads, keyboard, keyboard stand-in pad | Trigger rumble |
 | Audio | Menu, video and loading sound; XMA voices and Opus streams decode | Reverb is silent; Opus results unverified against the title |

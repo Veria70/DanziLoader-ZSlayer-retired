@@ -344,17 +344,17 @@ fn joined(mut ranges: Vec<(usize, usize)>) -> Vec<(usize, usize)> {
 /// so a piece that held several ranges was hashed once for each.
 pub(crate) fn joined_piece_runs(mut runs: Vec<CardSpan>) -> Vec<CardSpan> {
     runs.sort_unstable_by_key(|r| r.first);
-    let mut out: Vec<CardSpan> = Vec::with_capacity(runs.len());
-    for run in runs {
-        match out.last_mut() {
-            Some(last) if run.first <= last.first + last.pieces => {
-                last.pieces = last.pieces.max(run.first + run.pieces - last.first);
-                last.to = last.to.max(run.to);
-            }
-            _ => out.push(run),
+    // Compact the sorted spans in their input allocation. dedup_by passes
+    // the later span first and keeps the earlier one when they overlap.
+    runs.dedup_by(|next, kept| {
+        if next.first > kept.first + kept.pieces {
+            return false;
         }
-    }
-    out
+        kept.pieces = kept.pieces.max(next.first + next.pieces - kept.first);
+        kept.to = kept.to.max(next.to);
+        true
+    });
+    runs
 }
 
 /// A declared range of a copy in the card's memory, as the compare on the

@@ -766,7 +766,7 @@ mod tests {
     fn the_caption_ends_with_how_long_the_process_has_run() {
         use super::{Duration, caption};
 
-        let figures = "ZSlayerHQ retail game | 1 fps 953.5 ms/frame | 1526 draws/frame";
+        let figures = "DanziLoader V 1.0 | 1.0 fps 953.5 ms/frame | 1526 draws/frame";
         let up = |secs| caption(figures, Duration::from_secs(secs));
         assert_eq!(up(0), format!("{figures} | up 0:00"));
         assert_eq!(up(59), format!("{figures} | up 0:59"));
@@ -6042,6 +6042,8 @@ fn process_uptime() -> Duration {
     age + at.elapsed()
 }
 
+const LOADER_NAME: &str = concat!("DanziLoader V ", env!("DANZILOADER_VERSION"));
+
 /// The window's caption: the meter's figures, then how long the process has
 /// run, as minutes and seconds, with hours once there are any.
 fn caption(figures: &str, up: Duration) -> String {
@@ -6314,7 +6316,7 @@ impl Meter {
         }
         let (cpu_pct, gpu_pct, ram_mb) = (self.cpu_pct, self.gpu_pct, self.ram_mb);
         let text = format!(
-            "ZSlayerHQ retail game | {fps:.0} fps {ms:.1} ms/frame | gpu {gpu_pct:.0}% busy \
+            "{LOADER_NAME} | {fps:.1} fps {ms:.1} ms/frame | gpu {gpu_pct:.0}% busy \
              cpu {cpu_pct:.0}% ram {ram_mb:.0} MB | {draws:.0} draws/frame"
         );
         // Setting the text waits for the window's thread (a title thread,
@@ -6877,6 +6879,7 @@ extern "system" fn window_proc(
 
 fn make_window(width: u32, height: u32) -> windows::core::Result<HWND> {
     const CLASS: PCWSTR = w!("VIctory");
+    let title: Vec<u16> = LOADER_NAME.encode_utf16().chain([0]).collect();
     // SAFETY: registers our class once and creates a window of it.
     unsafe {
         let instance = GetModuleHandleW(None)?;
@@ -6899,7 +6902,7 @@ fn make_window(width: u32, height: u32) -> windows::core::Result<HWND> {
         CreateWindowExW(
             WINDOW_EX_STYLE(0),
             CLASS,
-            w!("VIctory"),
+            PCWSTR(title.as_ptr()),
             WS_OVERLAPPEDWINDOW | WS_VISIBLE,
             CW_USEDEFAULT,
             CW_USEDEFAULT,
